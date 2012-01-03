@@ -1,0 +1,6 @@
+Setup.hs
+cftest
+dist/
+*.cached
+*.hi
+*.o

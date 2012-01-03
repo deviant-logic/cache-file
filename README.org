@@ -1,0 +1,36 @@
+
+
+* Introduction
+
+The idea here is that it's necessary-but-painful to read in your
+configuration file every time the program runs.  It would be
+convenient if you could just cache the output of the read, and only do
+the painful bits when the original file is refreshed on the
+filesystem.  So that's what =CacheFile= does.
+
+* Example
+
+#+BEGIN_SRC haskell
+import Data.CacheFile
+
+painful_read :: FilePath -> IO SomeBinaryInstance
+painful_read = ...
+
+read_cached = cacheFile painful_read
+
+main = do ouch <- read_cached "file"
+          ahhh <- read_cached "file"
+          return (ouch == ahhh)
+#+END_SRC
+
+Reading =ouch= will then, presumably, take an uncomfortably long
+amount of time.  The read into =ahhh= pleasurably short (the speed of
+a =decodeFile= from =Data.Binary=).
+
+* The (few) details
+
+The various =cacheFile*= functions check whether the file you want to
+read has already been cached, and if so, whether the cache is stale
+(just using mtime at the moment).  If it is, it runs the original
+painful read, and caches the result.  Otherwise, it just reads the
+cache file.
