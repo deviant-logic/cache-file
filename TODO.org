@@ -1,0 +1,12 @@
+
+
+* Bugs
+** TODO Make sure not to clobber the source file when caching
+** TODO Get unit test coverage
+** TODO Write some docs
+
+* Features
+** TODO Non-=Binary= backends
+*** Read
+*** Protocol Buffers
+*** JSON/BSON/YAML (=Data.Object=...)
