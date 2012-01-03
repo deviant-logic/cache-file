@@ -62,11 +62,11 @@ test_newer =
     "newer" ~:
       ["is false when no files exist" ~:
          "" `newer` "" >>= return . not,
-       "is false when only one file exists" ~:
-         ["on the right" ~: "" `newer` fileWe'reSureExists
-           >>= return . not,
-          "on the left"  ~: fileWe'reSureExists `newer` ""
-           >>= return . not ],
+       "when only one file exists on the" ~:
+         ["right is false" ~: "" `newer` fileWe'reSureExists
+          >>= return . not,
+          "left is true" ~: fileWe'reSureExists `newer` ""
+         ],
        "is true when the the file on the left is more recent" ~:
           withOlderAndNewer tmpdir "cftest-newer.tmp" $ flip newer,
        "is false when the the file on the right is more recent" ~:

@@ -18,7 +18,7 @@ Cabal-version:       >=1.2
 
 Library
   Exposed-modules: Data.CacheFile
-  Build-depends:   base, binary, unix, directory, old-time
+  Build-depends:   base, binary, unix, directory, old-time, transformers
   Other-modules:   Data.CacheFile.Internal
 
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
