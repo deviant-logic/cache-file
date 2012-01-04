@@ -26,23 +26,24 @@ cacheFile = cacheFileSuffixed ".cached"
 
 cacheFileAs :: (Binary a, MonadIO m) =>
               FilePath -> (FilePath -> m a) -> FilePath -> m a
-cacheFileAs = cacheFileBy . const
+cacheFileAs file = cacheFileBy $ const (return file)
 
 cacheFilePrefixed :: (Binary a, MonadIO m) =>
                     String -> (FilePath -> m a) -> FilePath -> m a
-cacheFilePrefixed = cacheFileBy . (++)
+cacheFilePrefixed pfx = cacheFileBy $ return . (pfx ++)
 
 cacheFileSuffixed :: (Binary a, MonadIO m) =>
                     String -> (FilePath -> m a) -> FilePath -> m a
-cacheFileSuffixed = cacheFileBy . flip (++)
+cacheFileSuffixed sfx = cacheFileBy $ return . (++sfx)
 
 cacheFileBy :: (Binary a, MonadIO m) =>
-              (FilePath -> FilePath) -> (FilePath -> m a) -> FilePath -> m a
+              (FilePath -> m FilePath) -> (FilePath -> m a) -> FilePath -> m a
 cacheFileBy cached reader path =
-    do update_cache <- liftIO $ path `newer` cached path
+    do cached_path  <- cached path
+       update_cache <- liftIO $ path `newer` cached_path
        the_data <- if update_cache then
                       reader path
-                  else liftIO $ decodeFile (cached path)
-       when update_cache $ liftIO (encodeFile (cached path) the_data)
+                  else liftIO $ decodeFile cached_path
+       when update_cache $ liftIO (encodeFile cached_path the_data)
        return the_data
 
