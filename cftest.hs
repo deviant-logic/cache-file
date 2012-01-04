@@ -3,8 +3,10 @@
 
 module Main where
 
-import Data.CacheFile.Internal
 import Test.HUnit
+import Data.CacheFile.Internal
+
+import Data.Binary
 import System.Environment
 import System.Directory
 import System.Posix.Files
@@ -12,6 +14,7 @@ import System.IO
 import System.IO.Error hiding (try, catch)
 import Prelude hiding (catch)
 import Control.Exception
+import Control.Monad
 
 import Control.Applicative
 
@@ -29,7 +32,8 @@ tmpdir = "/tmp"
 
 tests = test [ test_ignoreIOError,
                test_mtime,
-               test_newer ]
+               test_newer,
+               test_cacheFile]
 
 test_ignoreIOError =
     "ignoreIOError" ~:
@@ -73,3 +77,18 @@ test_newer =
           withOlderAndNewer tmpdir "cftest-newer.tmp" newer >>= return . not
       ]
 
+test_cacheFile =
+    "cacheFile" ~:
+      do (path, handle) <- openTempFile tmpdir "cacheFile.txt"
+         let cfpath = (path ++ defaultSuffix)
+             go     = cacheFile readFile
+         flip finally (forM [path, cfpath] removeFile) $
+           do hPutStr handle "foo"
+              hClose handle
+              firstRead <- go path
+              firstRead @=? "foo"
+              fileExist cfpath @? "makes a cache file"
+              nextRead  <- go path
+              nextRead  @=? firstRead
+              decoded   <- decodeFile cfpath
+              decoded   @=? firstRead

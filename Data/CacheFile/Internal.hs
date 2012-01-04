@@ -21,8 +21,11 @@ newer file file' = do fmt  <- mtime file
                       fmt' <- mtime file'
                       return (fmt > fmt')
 
+defaultSuffix :: String
+defaultSuffix = ".cached"
+
 cacheFile :: (Binary a, MonadIO m) => (FilePath -> m a) -> FilePath -> m a
-cacheFile = cacheFileSuffixed ".cached"
+cacheFile = cacheFileSuffixed defaultSuffix
 
 cacheFileAs :: (Binary a, MonadIO m) =>
               FilePath -> (FilePath -> m a) -> FilePath -> m a
