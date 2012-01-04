@@ -2,11 +2,11 @@
 
 * Introduction
 
-The idea here is that it's necessary-but-painful to read in your
-configuration file every time the program runs.  It would be
-convenient if you could just cache the output of the read, and only do
-the painful bits when the original file is refreshed on the
-filesystem.  So that's what =CacheFile= does.
+The idea here is that it's necessary-but-painful to read in your big,
+convoluted file every time your program runs.  It would be convenient
+if you could cache the value you read out of the file, and only do the
+painful file reading when the original big, convoluted file changes on
+the filesystem.  So that's what =CacheFile= does.
 
 * Example
 
